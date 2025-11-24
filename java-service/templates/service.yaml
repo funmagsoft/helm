@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: {{ include "service.fullname" . }}
   labels:
-    app: {{ include "service.name" . }}
+    app: {{ include "service.fullname" . }}
 spec:
   type: {{ .Values.service.type }}
   selector:
-    app: {{ include "service.name" . }}
+    app: {{ include "service.fullname" . }}
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
-      targetPort: 80
+      targetPort: 8080

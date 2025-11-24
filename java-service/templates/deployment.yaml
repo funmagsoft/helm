@@ -3,20 +3,20 @@ kind: Deployment
 metadata:
   name: {{ include "service.fullname" . }}
   labels:
-    app: {{ include "service.name" . }}
+    app: {{ include "service.fullname" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "service.name" . }}
+      app: {{ include "service.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ include "service.name" . }}
+        app: {{ include "service.fullname" . }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 80
+            - containerPort: 8080
