@@ -3,7 +3,11 @@
 {{- .Chart.Name -}}
 {{- end -}}
 
-{{/* Return the fullname, chartname + release name, max 63 chars */}}
+{{/* Return the fullname: either override from values or Release.Name */}}
 {{- define "service.fullname" -}}
-{{- printf "%s-%s" (include "service.name" .) .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 {{- end -}}
