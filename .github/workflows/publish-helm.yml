@@ -1,0 +1,53 @@
+name: Publish Helm Charts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "java-service/**"
+      - ".github/workflows/publish-helm.yaml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+
+      - name: Package chart
+        run: |
+          mkdir -p packaged
+          helm package java-service --destination packaged
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Copy chart to gh-pages
+        run: |
+          mkdir -p gh-pages/charts
+          cp packaged/*.tgz gh-pages/charts/
+
+      - name: Generate Helm index
+        run: |
+          helm repo index gh-pages/charts \
+            --url https://funmagsoft.github.io/helm/charts
+
+      - name: Publish to gh-pages
+        run: |
+          cd gh-pages
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Publish updated Helm charts" || echo "No changes to commit"
+          git push
