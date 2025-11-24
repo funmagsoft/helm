@@ -3,12 +3,12 @@ entries:
   java-service:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-11-24T17:41:43.037630109Z"
+    created: "2025-11-24T18:20:59.555021755Z"
     description: Common Helm chart for all Java microservices
-    digest: 8ede4ffa0b1c804277ed854f9597aa7c02609f7797cdf3ac27bf118a15d3f644
+    digest: 200ff4556fd8d0ec07e5eaeb50064a141eb349622a6638cfb7c85ed7023e55cb
     name: java-service
     type: application
     urls:
     - https://funmagsoft.github.io/helm/charts/java-service-1.0.0.tgz
     version: 1.0.0
-generated: "2025-11-24T17:41:43.037287397Z"
+generated: "2025-11-24T18:20:59.554708123Z"
