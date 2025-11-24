@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "java-service/**"
-      - ".github/workflows/publish-helm.yaml"
+#   paths:
+#     - "java-service/**"
+#     - ".github/workflows/publish-helm.yaml"
 
 permissions:
   contents: write
