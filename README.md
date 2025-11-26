@@ -1,64 +1,104 @@
 # Helm Charts
 
-To repozytorium zawiera oficjalne Helm Charty używane w projektach Funmagsoft.
-Charty są automatycznie publikowane jako Helm Repository dostępne pod adresem:
+Oficjalne Helm Charty dla serwisów Java Spring Boot.
 
-[https://funmagsoft.github.io/helm/charts/index.yaml](https://funmagsoft.github.io/helm/charts/index.yaml)
+**Helm Repository**: https://funmagsoft.github.io/helm/charts
 
-## Dodawanie repozytorium Helm
+## 🚀 Quick Start
 
-Aby skorzystać z chartów w projektach:
-
-```console
+### Dodaj repozytorium
+```bash
 helm repo add funmagsoft https://funmagsoft.github.io/helm/charts
 helm repo update
 ```
 
-Sprawdzenie dostępnych chartów:
-
-```console
+### Sprawdź dostępne charty
+```bash
 helm search repo funmagsoft
+# NAME                      CHART VERSION   APP VERSION   DESCRIPTION
+# funmagsoft/java-service   1.0.0           1.0.0         Generic chart for Java Spring Boot services
 ```
 
-## Instalacja przykładowego serwisu
+### Użyj w projekcie (jako dependency)
 
-```console
-helm upgrade --install my-service funmagsoft/java-service \
-  --set image.repository=myacr.azurecr.io/my-service \
-  --set image.tag=latest
+**Chart.yaml** (w gitops lub lokalnie):
+```yaml
+apiVersion: v2
+name: my-service
+version: 0.1.0
+
+dependencies:
+  - name: java-service
+    version: 1.0.0
+    repository: "https://funmagsoft.github.io/helm/charts"
 ```
 
-Lub podając tag obrazu dynamicznie:
-
-```console
-helm upgrade --install my-service funmagsoft/java-service \
-  --set image.repository=myacr.azurecr.io/my-service \
-  --set image.tag=latest
+**values.yaml**:
+```yaml
+java-service:
+  fullnameOverride: "my-service"
+  image:
+    repository: "myacr.azurecr.io/my-service"
+    tag: "abc1234"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "200m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
 ```
 
-## Struktura repozytorium
-
-```
-/charts
-  └── java-service-<version>.tgz      # Publikowane paczki Helm
-index.yaml                            # Helm repository index
-.github/workflows/publish-helm.yml    # Publikacja chartów
-README.md
+**Deploy**:
+```bash
+helm dependency update
+helm upgrade --install my-service . -f values.yaml -n dev
 ```
 
-## Publikacja Chartów (automatyczna)
+## 📁 Struktura repozytorium
 
-Charty są publikowane automatycznie po wypuszczeniu nowej wersji (.tgz) w gałęzi main. Workflow:
-
-```console
-.github/workflows/publish-helm.yml
+```
+helm/
+├── java-service/           # Źródłowy chart
+│   ├── Chart.yaml
+│   ├── values.yaml
+│   └── templates/
+└── charts/                 # Publikowane paczki (.tgz)
+    └── index.yaml
 ```
 
-Generuje:
+## 📦 Charty
 
-```console
-/charts/*.tgz
-index.yaml
+### `java-service` - Generic chart dla Java Spring Boot
+
+Uniwersalny chart dla wszystkich serwisów Java Spring Boot. Wspiera:
+- Deployment (z konfigurowalnymi resources, replicas)
+- Service (ClusterIP/LoadBalancer)
+- ConfigMap (opcjonalnie)
+- Ingress (opcjonalnie)
+
+**Szczegóły**: `java-service/README.md`
+
+## 🔄 Publikacja (automatyczna)
+
+Charty są publikowane automatycznie po zmianach w `main`:
+1. `.github/workflows/publish-helm.yml` → trigger on push
+2. Pakowanie: `helm package java-service/` → `java-service-1.0.0.tgz`
+3. Indeksowanie: `helm repo index charts/`
+4. Publikacja do GitHub Pages (branch `gh-pages`)
+
+## 🔗 Użycie w GitOps
+
+Wszystkie serwisy używają `java-service` jako dependency:
+
+```
+gitops/apps/greeting-service/Chart.yaml
+→ dependency: java-service @ 1.0.0
+→ values-dev.yaml (nested under java-service:)
 ```
 
-i publikuje je do gałęzi `gh-pages`.
+**Więcej**: https://github.com/funmagsoft/gitops
