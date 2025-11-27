@@ -11,7 +11,10 @@ service:
   type: ClusterIP
   port: 8080
 
+serviceAccountName: ""
+
 resources: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
+env: []

@@ -13,10 +13,20 @@ spec:
     metadata:
       labels:
         app: {{ include "service.fullname" . }}
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: {{ .Values.serviceAccountName | default "default" }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           ports:
             - containerPort: {{ .Values.service.port | default 8080 }}
+          {{- if .Values.resources }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          {{- end }}
+          {{- if .Values.env }}
+          env:
+{{ toYaml .Values.env | indent 12 }}
+          {{- end }}
